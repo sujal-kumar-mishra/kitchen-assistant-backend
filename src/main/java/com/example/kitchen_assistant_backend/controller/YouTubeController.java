@@ -22,8 +22,16 @@ public class YouTubeController {
         this.youTubeService = youTubeService;
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<List<VideoResult>> search(@RequestParam String query) {
+    /**
+     * UPDATED: Changed from GET to POST to work with Retell AI's tool calling.
+     * It now accepts a JSON body with a "query" field.
+     */
+    @PostMapping("/search")
+    public ResponseEntity<List<VideoResult>> search(@RequestBody Map<String, String> payload) {
+        String query = payload.get("query");
+        if (query == null || query.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
         List<VideoResult> results = youTubeService.searchVideos(query);
         return ResponseEntity.ok(results);
     }
